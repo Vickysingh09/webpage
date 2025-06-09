@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Link Share</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section h2 {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        input[type="url"], input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="url"]:focus, input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            font-size: 14px;
+            padding: 10px 20px;
+            width: auto;
+            margin: 10px;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid rgba(244, 67, 54, 0.3);
+            border-radius: 10px;
+            color: #c62828;
+            font-weight: 500;
+        }
+
+        .code-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+            letter-spacing: 3px;
+        }
+
+        .link-display {
+            word-break: break-all;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .github-icon {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .admin-header {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #d32f2f;
+            font-weight: 600;
+        }
+
+        .public-notice {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+        }
+
+        .code-input-large {
+            font-size: 1.5em;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .access-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            GitHub Link Share
+        </h1>
+
+        <!-- Admin Login Section -->
+        <div id="admin-login" class="section">
+            <h2>Admin Access</h2>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" maxlength="20">
+            <button onclick="adminLogin()">Admin Login</button>
+            <div id="adminLoginResult"></div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" class="hidden">
+            <div class="admin-header">
+                🔐 Admin Mode - You can create and manage links
+            </div>
+            
+            <div class="section">
+                <h2>Create New Share Link</h2>
+                <input type="url" id="githubUrl" placeholder="https://github.com/username/repository" required>
+                <button onclick="createShare()">Generate 4-Digit Code</button>
+                <div id="createResult"></div>
+            </div>
+
+            <button class="admin-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Public Access Section -->
+        <div id="public-access">
+            <div class="public-notice">
+                <h3>🔗 Access Shared Repository</h3>
+                <p>Enter the 4-digit code provided by the admin to access the shared GitHub repository.</p>
+            </div>
+            
+            <div class="section">
+                <h2>Enter Access Code</h2>
+                <div class="access-description">
+                    Ask the admin for a 4-digit code to access their shared GitHub repository. Each code works only once.
+                </div>
+                <input type="text" id="accessCode" placeholder="0000" maxlength="4" pattern="[0-9]{4}" class="code-input-large">
+                <button onclick="accessShare()">Access Repository</button>
+                <div id="accessResult"></div>
+            </div>
+        </div>
+
+        <button class="admin-btn" onclick="showAdminLogin()" id="admin-toggle">🔐 Admin</button>
+    </div>
+
+    <script>
+        // Simple admin password (in production, use proper authentication)
+        const ADMIN_PASSWORD = "Vicky@420"; // Change this to your preferred password
+        
+        // In-memory storage for shared links
+        let sharedLinks = {};
+        let isAdminLoggedIn = false;
+
+        function showAdminLogin() {
+            document.getElementById('admin-login').classList.remove('hidden');
+            document.getElementById('admin-toggle').classList.add('hidden');
+            document.getElementById('public-access').classList.add('hidden');
+        }
+
+        function adminLogin() {
+            const passwordInput = document.getElementById('adminPassword');
+            const resultDiv = document.getElementById('adminLoginResult');
+            const password = passwordInput.value.trim();
+
+            if (!password) {
+                resultDiv.innerHTML = '<div class="error">Please enter the admin password</div>';
+                return;
+            }
+
+            if (password === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('public-access').classList.add('hidden');
+                document.getElementById('admin-toggle').classList.add('hidden');
+                passwordInput.value = '';
+                resultDiv.innerHTML = '';
+            } else {
+                resultDiv.innerHTML = '<div class="error">Incorrect password. Access denied.</div>';
+                passwordInput.value = '';
+            }
+        }
+
+        function logout() {
+            isAdminLoggedIn = false;
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('admin-login').classList.add('hidden');
+            document.getElementById('public-access').classList.remove('hidden');
+            document.getElementById('admin-toggle').classList.remove('hidden');
+            
+            // Clear any results
+            document.getElementById('createResult').innerHTML = '';
+            document.getElementById('adminLoginResult').innerHTML = '';
+        }
+
+        function generateCode() {
+            let code;
+            do {
+                code = Math.floor(1000 + Math.random() * 9000).toString();
+            } while (sharedLinks[code]);
+            return code;
+        }
+
+        function isValidGitHubUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                return urlObj.hostname === 'github.com' && urlObj.pathname.split('/').length >= 3;
+            } catch {
+                return false;
+            }
+        }
+
+        function createShare() {
+            if (!isAdminLoggedIn) {
+                alert('Admin access required');
+                return;
+            }
+
+            const urlInput = document.getElementById('githubUrl');
+            const resultDiv = document.getElementById('createResult');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                resultDiv.innerHTML = '<div class="error">Please enter a GitHub URL</div>';
+                return;
+            }
+
+            if (!isValidGitHubUrl(url)) {
+                resultDiv.innerHTML = '<div class="error">Please enter a valid GitHub repository URL</div>';
+                return;
+            }
+
+            const code = generateCode();
+            sharedLinks[code] = {
+                url: url,
+                created: new Date().toISOString(),
+                used: false
+            };
+
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h3>✅ Link Created Successfully!</h3>
+                    <p>Share this 4-digit code:</p>
+                    <div class="code-display">${code}</div>
+                    <p>It provides one-time access to:</p>
+                    <div class="link-display">${url}</div>
+                    <p><strong>Note:</strong> This code can only be used once!</p>
+                </div>
+            `;
+
+            urlInput.value = '';
+        }
+
+        function accessShare() {
+            const codeInput = document.getElementById('accessCode');
+            const resultDiv = document.getElementById('accessResult');
+            const code = codeInput.value.trim();
+
+            if (!code) {
+                resultDiv.innerHTML = '<div class="error">Please enter a 4-digit code</div>';
+                return;
+            }
+
+            if (!/^\d{4}$/.test(code)) {
+                resultDiv.innerHTML = '<div class="error">Please enter a valid 4-digit numeric code</div>';
+                return;
+            }
+
+            const linkData = sharedLinks[code];
+
+            if (!linkData) {
+                resultDiv.innerHTML = '<div class="error">Invalid code. Please check with the admin and try again.</div>';
+                return;
+            }
+
+            if (linkData.used) {
+                resultDiv.innerHTML = '<div class="error">This code has already been used and is no longer valid.</div>';
+                return;
+            }
+
+            // Mark as used and delete from storage
+            linkData.used = true;
+            delete sharedLinks[code];
+
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h3>🎉 Access Granted!</h3>
+                    <p>Here's the GitHub repository:</p>
+                    <div class="link-display">
+                        <a href="${linkData.url}" target="_blank" rel="noopener noreferrer">${linkData.url}</a>
+                    </div>
+                    <p><strong>Note:</strong> This code has been consumed and cannot be used again.</p>
+                    <button onclick="window.open('${linkData.url}', '_blank')" style="margin-top: 15px;">
+                        Open Repository
+                    </button>
+                </div>
+            `;
+
+            codeInput.value = '';
+        }
+
+        // Event listeners
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') adminLogin();
+        });
+
+        document.getElementById('githubUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') createShare();
+        });
+
+        document.getElementById('accessCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') accessShare();
+        });
+
+        // Auto-format code input
+        document.getElementById('accessCode').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Initialize - show public access by default
+        document.addEventListener('DOMContentLoaded', function() {
+            logout(); // Ensures proper initial state
+        });
+    </script>
+</body>
+</html>
